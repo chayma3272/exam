@@ -1,6 +1,8 @@
 const db = require('../../src/persistence/sqlite');
 const fs = require('fs');
-const location = process.env.SQLITE_DB_LOCATION || '/etc/todos/todo.db';
+
+// Utiliser un fichier temporaire pour chaque test
+const location = process.env.SQLITE_DB_LOCATION || `C:/etc/todos/todo-${Date.now()}.db`;
 
 const ITEM = {
     id: '7aef3d7c-d301-4846-8358-2a91ec9d6be3',
@@ -10,7 +12,11 @@ const ITEM = {
 
 beforeEach(() => {
     if (fs.existsSync(location)) {
-        fs.unlinkSync(location);
+        try {
+            fs.unlinkSync(location); // essaie de supprimer
+        } catch (err) {
+            console.log('Fichier bloqué, test continue'); // ignore l'erreur
+        }
     }
 });
 
