@@ -16,6 +16,8 @@ pipeline {
 
         stage('Tests') {
             steps {
+              bat 'if exist C:\\etc\\todos\\todo.db del C:\\etc\\todos\\todo.db'
+
                 bat 'npm test || true'   
             }
         }
