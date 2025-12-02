@@ -1,8 +1,9 @@
 const db = require('../../src/persistence/sqlite');
 const fs = require('fs');
+const path = require('path');
 
-// Utiliser un fichier temporaire pour chaque test
-const location = process.env.SQLITE_DB_LOCATION || `C:/etc/todos/todo-${Date.now()}.db`;
+// Crée un fichier temporaire pour chaque test pour éviter les conflits
+const location = process.env.SQLITE_DB_LOCATION || path.join('C:', 'etc', 'todos', `todo-${Date.now()}.db`);
 
 const ITEM = {
     id: '7aef3d7c-d301-4846-8358-2a91ec9d6be3',
@@ -10,12 +11,13 @@ const ITEM = {
     completed: false,
 };
 
+// Supprime le fichier s'il existe, mais ignore les erreurs si le fichier est bloqué
 beforeEach(() => {
     if (fs.existsSync(location)) {
         try {
-            fs.unlinkSync(location); // essaie de supprimer
+            fs.unlinkSync(location);
         } catch (err) {
-            console.log('Fichier bloqué, test continue'); // ignore l'erreur
+            console.log('Fichier bloqué ou utilisé, le test continue');
         }
     }
 });
@@ -26,7 +28,6 @@ test('it initializes correctly', async () => {
 
 test('it can store and retrieve items', async () => {
     await db.init();
-
     await db.storeItem(ITEM);
 
     const items = await db.getItems();
